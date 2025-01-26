@@ -1,4 +1,4 @@
-import { HelpCircle, Settings, User, LogOut } from "lucide-react";
+import { HelpCircle, Settings, User, Settings2} from "lucide-react";
 import { auth } from "@/server/auth";
 import SignOut from "@/components/sign-out";
 import { Button } from "@/components/ui/button";
@@ -28,24 +28,28 @@ const Header: React.FC = async () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline">
-              {session.user.email || "My Account"}
+              {"Actions"}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-             <Link href="/Profile">
+             <Link href="/profile">
             <DropdownMenuItem>    
                 <User className="mr-2 h-4 w-4" />
                 Profile
             </DropdownMenuItem>
             </Link>
+            <Link href="/preferences">
             <DropdownMenuItem>
-              <Settings className="mr-2 h-4 w-4" />
+              <Settings2 className="mr-2 h-4 w-4" />
               Preferences
             </DropdownMenuItem>
+            </Link>
+            <Link href="/settings">
             <DropdownMenuItem>
               <Settings className="mr-2 h-4 w-4" />
               Settings
             </DropdownMenuItem>
+            </Link>
             <DropdownMenuItem asChild>
               <SignOut />
             </DropdownMenuItem>

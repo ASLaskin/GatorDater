@@ -1,12 +1,10 @@
 import { auth } from "@/server/auth";
 import Header from "@/components/header";
 import { SignIn } from "@/components/sign-in";
+import CountdownTimer from "@/components/CountdownTimer";
 
 export default async function Home() {
   const session = await auth();
-
-  
-  const nextMatchTime = "5:00:00";
 
   return (
     <main>
@@ -30,7 +28,7 @@ export default async function Home() {
             <p className="text-lg font-medium">
               Time until your next match:
             </p>
-            <p className="text-2xl font-bold text-green-600">{nextMatchTime}</p>
+            <CountdownTimer />
           </div>
           <div className="flex items-center space-x-2">
             <input
