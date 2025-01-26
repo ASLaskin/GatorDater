@@ -17,7 +17,36 @@ export const users = pgTable("user", {
   email: text("email").notNull(),
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),
-})
+  bio: text("bio").notNull().default(''),
+  gender: text("gender"), 
+  preferencesComplete: boolean("preferencesComplete").notNull().$default(() => false),
+});
+
+
+export const preferences = pgTable("preferences", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  genderPreferences: text("genderPreferences") 
+});
+
+
+export const matcher = pgTable("matcher", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  user1: text("user1")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  user2: text("user2")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+    status: text("status").notNull().$type<'liked' | 'passed' | 'unmatched'>(),
+});
+
 
 export const accounts = pgTable(
   "account",

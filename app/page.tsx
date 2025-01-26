@@ -1,5 +1,6 @@
 import { auth } from "@/server/auth";
 import Header from "@/components/header";
+import { SignIn } from "@/components/sign-in";
 
 export default async function Home() {
   const session = await auth();
@@ -15,6 +16,7 @@ export default async function Home() {
           <h2 className="text-xl font-semibold">
             Sign in with your UFL email to join
           </h2>
+          <SignIn/>
           <a
             href="#how-it-works"
             className="text-blue-500 underline hover:text-blue-700"

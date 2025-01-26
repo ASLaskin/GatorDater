@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Link from "next/link";
 
 const Header: React.FC = async () => {
   const session = await auth();
@@ -31,10 +32,12 @@ const Header: React.FC = async () => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem>
-              <User className="mr-2 h-4 w-4" />
-              Profile
+             <Link href="/Profile">
+            <DropdownMenuItem>    
+                <User className="mr-2 h-4 w-4" />
+                Profile
             </DropdownMenuItem>
+            </Link>
             <DropdownMenuItem>
               <Settings className="mr-2 h-4 w-4" />
               Preferences
