@@ -26,15 +26,48 @@ export default function ProfileForm({ initialUser }: ProfileFormProps) {
   const [image, setImage] = useState(initialUser?.image || '');
   const [bio, setBio] = useState(initialUser?.bio || '');
   const [gender, setGender] = useState(initialUser?.gender || '');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Profile update submitted", { name, image, bio, gender });
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/profile/edit', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          bio,
+          gender,
+          image,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to update profile');
+      }
+
+      console.log("Profile updated")
+    } catch (error) {
+      console.log("Profile failed to upload")
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (file.size > 5 * 1024 * 1024) { 
+        console.log("Image must be less than 5MB")
+        return;
+      }
+
       const reader = new FileReader();
       reader.onloadend = () => {
         setImage(reader.result as string);
@@ -74,7 +107,7 @@ export default function ProfileForm({ initialUser }: ProfileFormProps) {
             placeholder="Enter your name"
           />
         </div>
-        
+
         <div>
           <label className="block mb-2">Bio</label>
           <Textarea
@@ -82,7 +115,11 @@ export default function ProfileForm({ initialUser }: ProfileFormProps) {
             onChange={(e) => setBio(e.target.value)}
             placeholder="Tell us about yourself"
             className="min-h-[100px]"
+            maxLength={150}
           />
+          <p className="text-sm text-gray-500 mt-1">
+            {bio.length}/150 characters
+          </p>
         </div>
 
         <div>
@@ -97,14 +134,17 @@ export default function ProfileForm({ initialUser }: ProfileFormProps) {
             <SelectContent>
               <SelectItem value="male">Male</SelectItem>
               <SelectItem value="female">Female</SelectItem>
-              <SelectItem value="other">Other</SelectItem>
-              <SelectItem value="prefer-not-to-say">Prefer Not to Say</SelectItem>
+              <SelectItem value="nonbinary">Non-Binary</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
-        <Button type="submit" className="w-full">
-          Update Profile
+        <Button 
+          type="submit" 
+          className="w-full"
+          disabled={isLoading}
+        >
+          {isLoading ? "Updating..." : "Update Profile"}
         </Button>
       </form>
     </div>
