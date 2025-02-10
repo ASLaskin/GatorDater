@@ -1,11 +1,13 @@
-import { getToken } from 'next-auth/jwt';
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
 
 const PROTECTED_ROUTES = [ '/admin', '/profile'];
 
 export async function middleware(req: NextRequest) {
-  const token = req.cookies.get('next-auth.session-token');
+  const token =
+    req.cookies.get('next-auth.session-token') ||
+    req.cookies.get('authjs.session-token');
+
   const { pathname } = req.nextUrl;
 
   if (!token && PROTECTED_ROUTES.includes(pathname)) {

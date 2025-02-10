@@ -53,7 +53,7 @@ export default function ProfileForm({ initialUser }: ProfileFormProps) {
       }
 
       console.log("Profile updated")
-    } catch (error) {
+    } catch {
       console.log("Profile failed to upload")
     } finally {
       setIsLoading(false);
