@@ -44,7 +44,7 @@ export const matcher = pgTable("matcher", {
   user2: text("user2")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
-    status: text("status").notNull().$type<'liked' | 'passed' | 'unmatched'>(),
+    status: text("status").notNull().$type<'pending' |'liked' | 'passed' | 'unmatched'>(),
 });
 
 

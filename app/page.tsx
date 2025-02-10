@@ -2,9 +2,19 @@ import { auth } from "@/server/auth";
 import Header from "@/components/header";
 import { SignIn } from "@/components/sign-in";
 import CountdownTimer from "@/components/CountdownTimer";
+import MatchUsersButton from "@/components/matchbutton";
+import MatchesList from "@/components/match";
 
 export default async function Home() {
   const session = await auth();
+
+  if (session === undefined) {
+    return (
+      <main className="flex items-center justify-center min-h-screen">
+        <p className="text-lg font-medium">Loading...</p>
+      </main>
+    );
+  }
 
   return (
     <main>
@@ -40,6 +50,8 @@ export default async function Home() {
               Get notified for the next match
             </label>
           </div>
+          <MatchUsersButton />
+          {session?.user?.id ? <MatchesList userId={session.user.id} /> : <p>Loading matches...</p>}
         </div>
       )}
     </main>
