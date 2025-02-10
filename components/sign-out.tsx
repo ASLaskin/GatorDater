@@ -4,7 +4,7 @@ export default function SignOutPage() {
   return (
     <div>
       <form
-        action={async (formData) => {
+        action={async () => {
           "use server"
           await signOut()
         }}

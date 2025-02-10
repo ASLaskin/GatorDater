@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useState } from 'react';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -35,7 +34,7 @@ export default function PreferencesForm({ initialPreferences }: PreferencesFormP
       }
 
       console.log("Preferences updated");
-    } catch (error) {
+    } catch {
       console.log("Preferences failed to update");
     } finally {
       setIsLoading(false);
