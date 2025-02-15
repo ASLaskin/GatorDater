@@ -47,6 +47,22 @@ export const matcher = pgTable("matcher", {
     status: text("status").notNull().$type<'pending' |'liked' | 'passed' | 'unmatched'>(),
 });
 
+export const messages = pgTable("messages", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  matchId: text("matchId")
+    .notNull()
+    .references(() => matcher.id, { onDelete: "cascade" }),
+  senderId: text("senderId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  content: text("content").notNull(),
+  createdAt: timestamp("createdAt", { mode: "date" })
+    .notNull()
+    .$defaultFn(() => new Date()),
+});
+
 
 export const accounts = pgTable(
   "account",
