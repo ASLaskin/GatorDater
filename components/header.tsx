@@ -17,7 +17,9 @@ const Header: React.FC = async () => {
     <header className="flex justify-between items-center p-4 border-b">
       {/* Logo */}
       <div className="flex items-center space-x-4">
-        <h1 className="text-2xl font-bold">GatorDater</h1>
+        <Link href="/">
+          <h1 className="text-2xl font-bold">GatorDater</h1>
+        </Link>
         <Button variant="ghost" size="icon">
           <HelpCircle className="h-5 w-5" />
         </Button>

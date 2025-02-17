@@ -4,7 +4,6 @@ import { messages, matcher } from '@/server/schema';
 import { eq, and, or, desc } from 'drizzle-orm';
 import { auth } from "@/server/auth";
 
-// Get messages for a specific match
 export async function GET(req: Request) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -18,7 +17,6 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Match ID is required" }, { status: 400 });
   }
 
-  // Verify that the user is part of this match
   const matchExists = await db.query.matcher.findFirst({
     where: and(
       eq(matcher.id, matchId),
@@ -33,7 +31,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Match not found" }, { status: 404 });
   }
 
-  // Get messages for this match
+
   const messagesList = await db.query.messages.findMany({
     where: eq(messages.matchId, matchId),
     orderBy: [desc(messages.createdAt)],
@@ -45,7 +43,6 @@ export async function GET(req: Request) {
   });
 }
 
-// Send a new message
 export async function POST(req: Request) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -62,7 +59,6 @@ export async function POST(req: Request) {
     );
   }
 
-  // Verify that the user is part of this match
   const match = await db.query.matcher.findFirst({
     where: and(
       eq(matcher.id, matchId),
@@ -77,15 +73,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Match not found" }, { status: 404 });
   }
 
-  // Optionally verify that both users have liked each other
-  if (match.status !== "liked") {
-    return NextResponse.json(
-      { error: "Cannot send messages until both users have liked each other" },
-      { status: 403 }
-    );
-  }
-
-  // Create new message
   const newMessage = await db.insert(messages).values({
     id: crypto.randomUUID(),
     matchId,
