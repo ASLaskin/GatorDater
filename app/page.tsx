@@ -24,13 +24,21 @@ export default async function Home() {
           <h2 className="text-xl font-semibold">
             Sign in with your UFL email to join
           </h2>
-          <SignIn/>
-          <a
-            href="#how-it-works"
-            className="text-blue-500 underline hover:text-blue-700"
-          >
-            How it works
-          </a>
+          <SignIn />
+          <div className="max-w-md text-center space-y-4 px-4">
+            <h2 className="text-xl font-semibold text-blue-600">How It Works</h2>
+            <div className="space-y-3">
+              <p>
+                Welcome to the dating app exclusively for UF students! We're different - instead of endless swiping, we give you one quality match every day at a set time. Think of it as your daily coffee date opportunity.
+              </p>
+              <p>
+                When you get a match, you both have 24 hours to get to know each other and decide if you'd like to continue the connection. If you both like each other, you'll stay matched and can keep chatting. No pressure, no games - just one meaningful connection at a time.
+              </p>
+              <p className="font-medium">
+                Ready to meet someone special? Sign in with your UFL email and get your first match tomorrow!
+              </p>
+            </div>
+          </div>
         </div>
       ) : (
         <div className="flex flex-col items-center mt-10 space-y-4">

@@ -58,7 +58,7 @@ const Header: React.FC = async () => {
           </DropdownMenuContent>
         </DropdownMenu>
       ) : (
-        <Button>Sign In</Button>
+        <a>Sign In To Get Started</a>
       )}
     </header>
   );
