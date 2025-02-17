@@ -5,10 +5,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Loader2 } from 'lucide-react';
 import Chat from './Chat';
+import MatchActions from './matchActions';
+import { useToast } from "@/hooks/use-toast"
 
 type Match = {
   matchId: string;
-  status: 'pending' | 'liked' | 'passed' | 'unmatched';
+  user1Liked: boolean;
+  user2Liked: boolean;
   matchedUser: {
     id: string;
     name: string | null;
@@ -26,7 +29,9 @@ export default function MatchesList({ userId }: MatchesListProps) {
   const [match, setMatch] = useState<Match | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+  const [actionLoading, setActionLoading] = useState(false);
+  const { toast } = useToast()
+
   useEffect(() => {
     const fetchMatch = async () => {
       try {
@@ -35,7 +40,6 @@ export default function MatchesList({ userId }: MatchesListProps) {
         if (!response.ok) throw new Error('Failed to fetch match');
         
         const data = await response.json();
-        // Since user only has one match at a time, take the first one if it exists
         setMatch(data.matches && data.matches.length > 0 ? data.matches[0] : null);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load match');
@@ -46,23 +50,84 @@ export default function MatchesList({ userId }: MatchesListProps) {
     
     fetchMatch();
   }, [userId]);
-  
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-48">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
-  
-  if (error) {
-    return (
-      <div className="text-red-500 text-center p-4">
-        {error}
-      </div>
-    );
-  }
-  
+
+  const handleLike = async () => {
+    if (!match) return;
+    
+    try {
+      setActionLoading(true);
+      const response = await fetch('/api/matches/like', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          matchId: match.matchId,
+          userId: userId,
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to like match');
+      
+      const { match: updatedMatch } = await response.json();
+      // Keep the existing match data but update the like status
+      setMatch(prev => prev ? {
+        ...prev,
+        user1Liked: updatedMatch.user1Liked,
+        user2Liked: updatedMatch.user2Liked,
+      } : null);
+      
+      toast({
+        title: "Match liked!",
+        description: "If they like you back, you'll stay matched for tomorrow!",
+      });
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Failed to like match. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handlePass = async () => {
+    if (!match) return;
+    
+    try {
+      setActionLoading(true);
+      const response = await fetch('/api/matches/pass', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          matchId: match.matchId,
+          userId: userId,
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to pass on match');
+      
+      setMatch(null);
+      toast({
+        title: "Passed on match",
+        description: "You'll get a new match tomorrow!",
+      });
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Failed to pass on match. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  // ... rest of the render logic remains the same
+
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-bold">Your Match</h2>
@@ -96,18 +161,26 @@ export default function MatchesList({ userId }: MatchesListProps) {
                     {match.matchedUser?.bio}
                   </p>
                 </div>
-                <div className="text-sm text-muted-foreground">
-                  Status: {match.status}
-                </div>
               </div>
+              
+              <MatchActions
+                matchId={match.matchId}
+                isLiked={userId === match.matchedUser?.id ? match.user2Liked : match.user1Liked}
+                onLike={handleLike}
+                onPass={handlePass}
+                disabled={actionLoading}
+              />
             </CardContent>
           </Card>
-          <Chat
-            matchId={match.matchId}
-            matchedUserName={match.matchedUser?.name || 'Anonymous'}
-            matchedUserImage={match.matchedUser?.image || undefined}
-            currentUserId={userId}
-          />
+          
+          {match.matchId && (
+            <Chat
+              matchId={match.matchId}
+              matchedUserName={match.matchedUser?.name || 'Anonymous'}
+              matchedUserImage={match.matchedUser?.image || undefined}
+              currentUserId={userId}
+            />
+          )}
         </div>
       )}
     </div>
