@@ -46,7 +46,7 @@ export const matcher = pgTable("matcher", {
     .references(() => users.id, { onDelete: "cascade" }),
   user1Liked: boolean("user1_liked").notNull().default(false),
   user2Liked: boolean("user2_liked").notNull().default(false),
-  status: text("status").notNull().$type<'pending' | 'liked'>(),
+  status: text("status").notNull().$type<'pending' | 'liked' | 'unmatched'>(),
   createdAt: timestamp("createdAt", { mode: "date" })
     .notNull()
     .$defaultFn(() => new Date()),
@@ -56,19 +56,9 @@ export const matchHistory = pgTable("match_history", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  user1: text("user1")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  user2: text("user2")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  finalStatus: text("finalStatus").notNull().$type<'expired' | 'passed' | 'unmatched'>(),
-  createdAt: timestamp("createdAt", { mode: "date" })
-    .notNull()
-    .$defaultFn(() => new Date()),
-  endedAt: timestamp("endedAt", { mode: "date" })
-    .notNull()
-    .$defaultFn(() => new Date()),
+  userId: text("userId").notNull().unique(),
+  matchedUserIds: text("matched_user_ids").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 

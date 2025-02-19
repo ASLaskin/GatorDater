@@ -1,8 +1,7 @@
-// app/api/matches/pass/route.ts
 import { NextResponse } from 'next/server';
 import { db } from '@/server';
-import { matcher, matchHistory } from '@/server/schema';
-import { eq, and, or } from 'drizzle-orm';
+import { matcher } from '@/server/schema';
+import { eq } from 'drizzle-orm';
 import { auth } from "@/server/auth";
 
 export async function POST(req: Request) {
@@ -21,7 +20,7 @@ export async function POST(req: Request) {
     );
   }
 
-  // Find the match
+  // Find the match and verify user is part of it
   const match = await db.query.matcher.findFirst({
     where: eq(matcher.id, matchId),
   });
@@ -30,25 +29,27 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Match not found" }, { status: 404 });
   }
 
-  // Verify user is part of the match
-  if (match.user1 !== session.user.id && match.user2 !== session.user.id) {
+  // Determine which user is passing
+  const isUser1 = match.user1 === session.user.id;
+  const isUser2 = match.user2 === session.user.id;
+
+  if (!isUser1 && !isUser2) {
     return NextResponse.json({ error: "User not part of this match" }, { status: 403 });
   }
 
-  // Add to match history
-  await db.insert(matchHistory).values({
-    id: crypto.randomUUID(),
-    user1: match.user1,
-    user2: match.user2,
-    finalStatus: 'passed',
-    createdAt: match.createdAt,
-    endedAt: new Date(),
-  });
+  // Update the appropriate pass field (set the opposite like field to false)
+  const updateData = isUser1 
+    ? { user1Liked: false }  // User1 is passing, set user1Liked to false
+    : { user2Liked: false }; // User2 is passing, set user2Liked to false
 
-  // Delete the match
-  await db.delete(matcher).where(eq(matcher.id, matchId));
+  const updatedMatch = await db
+    .update(matcher)
+    .set(updateData)
+    .where(eq(matcher.id, matchId))
+    .returning();
 
   return NextResponse.json({
     success: true,
+    match: updatedMatch[0]
   });
 }

@@ -110,7 +110,6 @@ export default function MatchesList({ userId }: MatchesListProps) {
 
       if (!response.ok) throw new Error('Failed to pass on match');
       
-      setMatch(null);
       toast({
         title: "Passed on match",
         description: "You'll get a new match tomorrow!",
@@ -126,7 +125,6 @@ export default function MatchesList({ userId }: MatchesListProps) {
     }
   };
 
-  // ... rest of the render logic remains the same
 
   return (
     <div className="space-y-4">
