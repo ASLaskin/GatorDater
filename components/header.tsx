@@ -1,67 +1,125 @@
-import { HelpCircle, Settings, User, Settings2} from "lucide-react";
-import { auth } from "@/server/auth";
-import SignOut from "@/components/sign-out";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import Link from "next/link";
+import type React from "react"
+import { HelpCircle, Settings, User, Settings2, Menu } from "lucide-react"
+import { auth } from "@/server/auth"
+import SignOut from "@/components/sign-out"
+import { Button } from "@/components/ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import Link from "next/link"
 
 const Header: React.FC = async () => {
-  const session = await auth();
+  const session = await auth()
+
+  const NavItems = () => (
+    <>
+      <Link href="/profile" className="flex items-center space-x-2 hover:bg-accent rounded-md p-2 transition-colors">
+        <User className="h-4 w-4" />
+        <span>Profile</span>
+      </Link>
+      <Link
+        href="/preferences"
+        className="flex items-center space-x-2 hover:bg-accent rounded-md p-2 transition-colors"
+      >
+        <Settings2 className="h-4 w-4" />
+        <span>Preferences</span>
+      </Link>
+      <Link href="/settings" className="flex items-center space-x-2 hover:bg-accent rounded-md p-2 transition-colors">
+        <Settings className="h-4 w-4" />
+        <span>Settings</span>
+      </Link>
+      <SignOut />
+    </>
+  )
 
   return (
-    <header className="flex justify-between items-center p-4 border-b">
-      {/* Logo */}
-      <div className="flex items-center space-x-4">
-        <Link href="/">
-          <h1 className="text-2xl font-bold">GatorDater</h1>
-        </Link>
-        <Button variant="ghost" size="icon">
-          <HelpCircle className="h-5 w-5" />
-        </Button>
-      </div>
+    <header className="sticky top-0 z-50 px-3 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="flex h-14 items-center">
+        <div className="flex items-center space-x-4 md:space-x-6">
+          <Link href="/" className="flex items-center space-x-2">
+            <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              GatorDater
+            </h1>
+          </Link>
+          <Button variant="ghost" size="icon" className="hidden md:flex">
+            <HelpCircle className="h-5 w-5" />
+          </Button>
+        </div>
 
-      {/* User Actions */}
-      {session?.user ? (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline">
-              {"Actions"}
+        <div className="flex flex-1 items-center justify-end space-x-4">
+          {session?.user ? (
+            <>
+              {/* Mobile Menu */}
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="md:hidden">
+                    <Menu className="h-5 w-5" />
+                    <span className="sr-only">Open menu</span>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-64">
+                  <SheetTitle>Navigation Menu</SheetTitle>
+                  <div className="mt-6 flex flex-col space-y-3">
+                    <NavItems />
+                  </div>
+                </SheetContent>
+              </Sheet>
+
+              {/* Desktop Menu */}
+              <div className="hidden md:flex space-x-4">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={session.user.image || ""} alt={session.user.name || "User"} />
+                        <AvatarFallback>{session.user.name?.[0] || "U"}</AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <div className="flex items-center justify-start gap-2 p-2">
+                      <div className="flex flex-col space-y-1 leading-none">
+                        {session.user.name && <p className="font-medium">{session.user.name}</p>}
+                        {session.user.email && (
+                          <p className="w-[200px] truncate text-sm text-muted-foreground">{session.user.email}</p>
+                        )}
+                      </div>
+                    </div>
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile" className="flex items-center">
+                        <User className="mr-2 h-4 w-4" />
+                        Profile
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/preferences" className="flex items-center">
+                        <Settings2 className="mr-2 h-4 w-4" />
+                        Preferences
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/settings" className="flex items-center">
+                        <Settings className="mr-2 h-4 w-4" />
+                        Settings
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <SignOut />
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </>
+          ) : (
+            <Button asChild>
+              <Link href="/sign-in">Sign In</Link>
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-             <Link href="/profile">
-            <DropdownMenuItem>    
-                <User className="mr-2 h-4 w-4" />
-                Profile
-            </DropdownMenuItem>
-            </Link>
-            <Link href="/preferences">
-            <DropdownMenuItem>
-              <Settings2 className="mr-2 h-4 w-4" />
-              Preferences
-            </DropdownMenuItem>
-            </Link>
-            <Link href="/settings">
-            <DropdownMenuItem>
-              <Settings className="mr-2 h-4 w-4" />
-              Settings
-            </DropdownMenuItem>
-            </Link>
-            <DropdownMenuItem asChild>
-              <SignOut />
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ) : (
-        <a>Sign In To Get Started</a>
-      )}
+          )}
+        </div>
+      </div>
     </header>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header
+
