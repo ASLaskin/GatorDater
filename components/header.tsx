@@ -1,5 +1,5 @@
 import type React from "react"
-import { HelpCircle, Settings, User, Settings2, Menu } from "lucide-react"
+import { HelpCircle, Settings, User, Settings2, Menu, LogOut } from "lucide-react"
 import { auth } from "@/server/auth"
 import SignOut from "@/components/sign-out"
 import { Button } from "@/components/ui/button"
@@ -33,17 +33,22 @@ const Header: React.FC = async () => {
   )
 
   return (
-    <header className="sticky top-0 z-50 px-3 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 px-3 w-full border-slate-400  backdrop-blur">
       <div className="flex h-14 items-center">
         <div className="flex items-center space-x-4 md:space-x-6">
           <Link href="/" className="flex items-center space-x-2">
-            <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold bg-blue-500 bg-clip-text text-transparent">
               GatorDater
             </h1>
           </Link>
-          <Button variant="ghost" size="icon" className="hidden md:flex">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hidden md:flex bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent"
+          >
             <HelpCircle className="h-5 w-5" />
           </Button>
+
         </div>
 
         <div className="flex flex-1 items-center justify-end space-x-4">
@@ -69,8 +74,8 @@ const Header: React.FC = async () => {
               <div className="hidden md:flex space-x-4">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
-                      <Avatar className="h-8 w-8">
+                    <Button variant="ghost" size="icon" className="h-14 w-14 rounded-full">
+                      <Avatar className="h-10 w-10">
                         <AvatarImage src={session.user.image || ""} alt={session.user.name || "User"} />
                         <AvatarFallback>{session.user.name?.[0] || "U"}</AvatarFallback>
                       </Avatar>
@@ -112,7 +117,7 @@ const Header: React.FC = async () => {
             </>
           ) : (
             <Button asChild>
-              <Link href="/sign-in">Sign In</Link>
+              <a>Sign in to see your profile</a>
             </Button>
           )}
         </div>

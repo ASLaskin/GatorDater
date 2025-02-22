@@ -98,22 +98,9 @@ export default function Chat({ matchId, matchedUserName, matchedUserImage, curre
   }
 
   return (
-    <div className="flex flex-col h-[70vh] border rounded-lg shadow-sm">
+    <div className="flex flex-col h-[70vh] rounded-lg shadow-sm">
       {/* Chat header */}
-      <div className="px-4 py-3 border-b bg-white flex items-center">
-        {matchedUserImage ? (
-          <img
-            src={matchedUserImage}
-            alt={matchedUserName}
-            className="w-10 h-10 rounded-full mr-3"
-          />
-        ) : (
-          <div className="w-10 h-10 rounded-full bg-gray-300 mr-3 flex items-center justify-center">
-            <span className="text-gray-600">{matchedUserName[0]}</span>
-          </div>
-        )}
-        <h3 className="text-lg font-medium">{matchedUserName}</h3>
-      </div>
+
 
       {/* Messages container */}
       <div className="flex-grow p-4 overflow-y-auto bg-gray-50">
@@ -135,7 +122,7 @@ export default function Chat({ matchId, matchedUserName, matchedUserImage, curre
                   className={`p-3 rounded-lg ${
                     isOwnMessage
                       ? "bg-blue-500 text-white rounded-br-none"
-                      : "bg-white text-gray-800 rounded-bl-none border"
+                      : "bg-white text-gray-800 rounded-bl-none border-slate-200"
                   }`}
                 >
                   {message.content}
@@ -158,14 +145,14 @@ export default function Chat({ matchId, matchedUserName, matchedUserImage, curre
       </div>
 
       {/* Message input */}
-      <form onSubmit={sendMessage} className="p-3 border-t bg-white">
+      <form onSubmit={sendMessage} className="p-3 border-slate-200 bg-white">
         <div className="flex items-center">
           <input
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder="Type a message..."
-            className="flex-grow px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-grow px-4 py-2 border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
             type="submit"

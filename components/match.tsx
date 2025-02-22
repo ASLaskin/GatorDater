@@ -7,6 +7,7 @@ import { Loader2 } from 'lucide-react';
 import Chat from './Chat';
 import MatchActions from './matchActions';
 import { useToast } from "@/hooks/use-toast"
+import Link from "next/link";
 
 type Match = {
   matchId: string;
@@ -38,7 +39,7 @@ export default function MatchesList({ userId }: MatchesListProps) {
         setLoading(true);
         const response = await fetch(`/api/matches/get?userId=${userId}`);
         if (!response.ok) throw new Error('Failed to fetch match');
-        
+
         const data = await response.json();
         setMatch(data.matches && data.matches.length > 0 ? data.matches[0] : null);
       } catch (err) {
@@ -47,13 +48,13 @@ export default function MatchesList({ userId }: MatchesListProps) {
         setLoading(false);
       }
     };
-    
+
     fetchMatch();
   }, [userId]);
 
   const handleLike = async () => {
     if (!match) return;
-    
+
     try {
       setActionLoading(true);
       const response = await fetch('/api/matches/like', {
@@ -68,7 +69,7 @@ export default function MatchesList({ userId }: MatchesListProps) {
       });
 
       if (!response.ok) throw new Error('Failed to like match');
-      
+
       const { match: updatedMatch } = await response.json();
       // Keep the existing match data but update the like status
       setMatch(prev => prev ? {
@@ -76,7 +77,7 @@ export default function MatchesList({ userId }: MatchesListProps) {
         user1Liked: updatedMatch.user1Liked,
         user2Liked: updatedMatch.user2Liked,
       } : null);
-      
+
       toast({
         title: "Match liked!",
         description: "If they like you back, you'll stay matched for tomorrow!",
@@ -94,7 +95,7 @@ export default function MatchesList({ userId }: MatchesListProps) {
 
   const handlePass = async () => {
     if (!match) return;
-    
+
     try {
       setActionLoading(true);
       const response = await fetch('/api/matches/pass', {
@@ -109,7 +110,7 @@ export default function MatchesList({ userId }: MatchesListProps) {
       });
 
       if (!response.ok) throw new Error('Failed to pass on match');
-      
+
       toast({
         title: "Passed on match",
         description: "You'll get a new match tomorrow!",
@@ -128,18 +129,23 @@ export default function MatchesList({ userId }: MatchesListProps) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-bold">Your Match</h2>
+      <h2 className="text-2xl font-bold">Your Current Match</h2>
       {!match ? (
-        <Card>
-          <CardContent className="p-6">
+        <Card className='border-slate-200'>
+          <CardContent className="p-6 flex flex-col  items-center">
             <p className="text-center text-muted-foreground">
-              No match found yet.
+              No match found yet :(
             </p>
+            <Link href='/misc'>
+              <p className='text-muted-foreground underline'>
+                Play a game while you wait?
+              </p>
+            </Link>
           </CardContent>
         </Card>
       ) : (
         <div className="space-y-2">
-          <Card>
+          <Card className='border-slate-200'>
             <CardContent className="p-6">
               <div className="flex items-center space-x-4">
                 <Avatar className="h-12 w-12">
@@ -160,7 +166,7 @@ export default function MatchesList({ userId }: MatchesListProps) {
                   </p>
                 </div>
               </div>
-              
+
               <MatchActions
                 matchId={match.matchId}
                 isLiked={userId === match.matchedUser?.id ? match.user2Liked : match.user1Liked}
@@ -170,7 +176,7 @@ export default function MatchesList({ userId }: MatchesListProps) {
               />
             </CardContent>
           </Card>
-          
+
           {match.matchId && (
             <Chat
               matchId={match.matchId}
