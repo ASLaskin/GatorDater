@@ -8,7 +8,7 @@ import CountdownWrapper from "@/components/CountdownWrapper";
 
 export default async function Home() {
   const session = await auth();
-  
+
   if (session === undefined) {
     return (
       <main className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -16,7 +16,7 @@ export default async function Home() {
       </main>
     );
   }
-  
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-rose-200 to-teal-100">
       <Header />
@@ -28,14 +28,14 @@ export default async function Home() {
               Sign in with your UFL email to join
             </h2>
             <SignIn />
-            
+
             {/* Info Section */}
             <div className="space-y-5">
               <h3 className="text-2xl font-semibold text-blue-600 dark:text-blue-400">
                 How It Works
               </h3>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                Welcome to the dating app exclusively for UF students! We're different—no endless swiping. Instead, you get
+                Welcome to the dating app exclusively for UF students! This is different though, no endless swiping. Instead, you get
                 <span className="font-semibold"> one quality match </span> every day at a set time.
               </p>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
@@ -47,14 +47,18 @@ export default async function Home() {
               </p>
             </div>
           </Card>
+          <h1 className="flex items-center py-3">
+            Got feedback? Let me know
+            <a href="" className="text-blue-400 hover:text-blue-500 underline px-1"> Here</a>
+          </h1>
         </div>
       ) : (
         <div className="flex flex-col items-center mt-10 space-y-6">
           {/* CountdownTimer rendered client-side only */}
           <CountdownWrapper />
-          
+
           {/* <MatchUsersButton /> */}
-          
+
           <div className="w-full max-w-md p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-md">
             {session?.user?.id ? (
               <MatchesList userId={session.user.id} />
@@ -62,8 +66,13 @@ export default async function Home() {
               <p className="text-gray-600 dark:text-gray-400">Loading matches...</p>
             )}
           </div>
+          <h1 className="flex items-center py-3">
+            Got feedback? Let me know
+            <a href="" className="text-blue-400 hover:text-blue-500 underline px-1"> Here</a>
+          </h1>
         </div>
       )}
+
     </main>
   );
 }
