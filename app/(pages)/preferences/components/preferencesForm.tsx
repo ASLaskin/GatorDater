@@ -3,12 +3,14 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useToast } from "@/hooks/use-toast"
 
 interface PreferencesFormProps {
   initialPreferences?: { genderPreferences?: string } | null;
 }
 
 export default function PreferencesForm({ initialPreferences }: PreferencesFormProps) {
+  const { toast } = useToast();
   // Parse initial preferences to set the correct select value
   const getInitialSelectValue = (prefsString?: string) => {
     if (!prefsString) return '';
@@ -72,8 +74,10 @@ export default function PreferencesForm({ initialPreferences }: PreferencesFormP
       if (!response.ok) {
         throw new Error(data.error || 'Failed to update preferences');
       }
-      
-      console.log("Preferences updated");
+      toast({
+        title: "Preferences Updated",
+        description: "Your preference has been successfully updated",
+      });
     } catch {
       console.log("Preferences failed to update");
     } finally {
