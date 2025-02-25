@@ -14,15 +14,27 @@ export async function PUT(req: NextRequest) {
         { status: 401 }
       );
     }
-
+    
     const body = await req.json();
+    
+    // Convert genderPreferences to string format
+    if (body.genderPreferences) {
+      if (body.genderPreferences === 'both') {
+        // Handle 'both' case by converting to "male,female"
+        body.genderPreferences = "male,female";
+      } else if (Array.isArray(body.genderPreferences)) {
+        // Convert array to comma-separated string
+        body.genderPreferences = body.genderPreferences.join(',');
+      }
+    }
+    
     const existingPreferences = await db
       .select()
       .from(preferences)
       .where(eq(preferences.userId, session.user.id));
-
+    
     let updatedPreferences;
-
+    
     if (existingPreferences.length > 0) {
       updatedPreferences = await db
         .update(preferences)
@@ -38,19 +50,18 @@ export async function PUT(req: NextRequest) {
         })
         .returning();
     }
-
+    
     if (!updatedPreferences.length) {
       return NextResponse.json(
         { error: "Failed to update preferences" },
         { status: 500 }
       );
     }
-
+    
     return NextResponse.json({
       message: "Preferences updated successfully",
       preferences: updatedPreferences[0]
     });
-
   } catch (error) {
     console.error("Preferences update error:", error);
     return NextResponse.json(

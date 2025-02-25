@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/server';
 import { messages, matcher } from '@/server/schema';
-import { eq, and, or, desc } from 'drizzle-orm';
+import { eq, and, or, desc, gt } from 'drizzle-orm';
 import { auth } from "@/server/auth";
+
+const MAX_MESSAGES_PER_MINUTE = 10;
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; 
 
 export async function GET(req: Request) {
   const session = await auth();
@@ -30,7 +33,6 @@ export async function GET(req: Request) {
   if (!matchExists) {
     return NextResponse.json({ error: "Match not found" }, { status: 404 });
   }
-
 
   const messagesList = await db.query.messages.findMany({
     where: eq(messages.matchId, matchId),
@@ -71,6 +73,24 @@ export async function POST(req: Request) {
 
   if (!match) {
     return NextResponse.json({ error: "Match not found" }, { status: 404 });
+  }
+
+  const oneMinuteAgo = new Date(Date.now() - RATE_LIMIT_WINDOW_MS);
+  
+  const recentMessages = await db.query.messages.findMany({
+    where: and(
+      eq(messages.matchId, matchId),
+      eq(messages.senderId, session.user.id),
+      gt(messages.createdAt, oneMinuteAgo)
+    ),
+  });
+
+  if (recentMessages.length >= MAX_MESSAGES_PER_MINUTE) {
+    return NextResponse.json({
+      success: false,
+      error: "Rate limit exceeded. Please wait before sending more messages.",
+      remainingTime: Math.ceil((recentMessages[0].createdAt.getTime() + RATE_LIMIT_WINDOW_MS - Date.now()) / 1000)
+    }, { status: 429 }); // 429 Too Many Requests
   }
 
   const newMessage = await db.insert(messages).values({

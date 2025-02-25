@@ -45,7 +45,18 @@ export async function POST() {
 
     matchHistoryData.forEach(record => {
       try {
-        const matchedIds = JSON.parse(record.matchedUserIds as string) as string[];
+        // Handle both JSON string format and direct string format
+        let matchedIds: Iterable<string> | null | undefined;
+        if (typeof record.matchedUserIds === 'string') {
+          // Check if it's a JSON string or a comma-separated string
+          if (record.matchedUserIds.trim().startsWith('[')) {
+            matchedIds = JSON.parse(record.matchedUserIds) as string[];
+          } else {
+            matchedIds = record.matchedUserIds.split(',').map(id => id.trim());
+          }
+        } else {
+          matchedIds = [];
+        }
         previousMatches.set(record.userId, new Set<string>(matchedIds));
       } catch (error) {
         console.error("Error parsing matchedUserIds for user:", record.userId, error);
@@ -71,11 +82,33 @@ export async function POST() {
       }
 
       try {
-        const user1Prefs = JSON.parse(user1.preferences.genderPreferences)
-        const user2Prefs = JSON.parse(user2.preferences.genderPreferences)
+        // Handle both JSON string format and direct string format
+        let user1Prefs;
+        let user2Prefs;
+        
+        if (typeof user1.preferences.genderPreferences === 'string') {
+          if (user1.preferences.genderPreferences.trim().startsWith('[')) {
+            user1Prefs = JSON.parse(user1.preferences.genderPreferences);
+          } else {
+            user1Prefs = user1.preferences.genderPreferences.split(',').map(pref => pref.trim());
+          }
+        } else {
+          return false;
+        }
+        
+        if (typeof user2.preferences.genderPreferences === 'string') {
+          if (user2.preferences.genderPreferences.trim().startsWith('[')) {
+            user2Prefs = JSON.parse(user2.preferences.genderPreferences);
+          } else {
+            user2Prefs = user2.preferences.genderPreferences.split(',').map(pref => pref.trim());
+          }
+        } else {
+          return false;
+        }
 
         return user1Prefs.includes(user2.gender) && user2Prefs.includes(user1.gender)
-      } catch {
+      } catch (error) {
+        console.error("Error checking compatibility:", error);
         return false
       }
     }
@@ -124,25 +157,31 @@ export async function POST() {
           previousMatches.set(user1.id, matchedUserIdsUser1);
           previousMatches.set(user2.id, matchedUserIdsUser2);
         
-          // Update the match history table
+          // Use comma-separated string format for match history
           await db.insert(matchHistory).values({
             id: crypto.randomUUID(),
             userId: user1.id,
-            matchedUserIds: JSON.stringify([...matchedUserIdsUser1]),
+            matchedUserIds: Array.from(matchedUserIdsUser1).join(','),
             createdAt: new Date()
           }).onConflictDoUpdate({
             target: matchHistory.userId,
-            set: { matchedUserIds: JSON.stringify([...matchedUserIdsUser1]), createdAt: new Date() }
+            set: { 
+              matchedUserIds: Array.from(matchedUserIdsUser1).join(','), 
+              createdAt: new Date() 
+            }
           });
         
           await db.insert(matchHistory).values({
             id: crypto.randomUUID(),
             userId: user2.id,
-            matchedUserIds: JSON.stringify([...matchedUserIdsUser2]),
+            matchedUserIds: Array.from(matchedUserIdsUser2).join(','),
             createdAt: new Date()
           }).onConflictDoUpdate({
             target: matchHistory.userId,
-            set: { matchedUserIds: JSON.stringify([...matchedUserIdsUser2]), createdAt: new Date() }
+            set: { 
+              matchedUserIds: Array.from(matchedUserIdsUser2).join(','), 
+              createdAt: new Date() 
+            }
           });
         
           break
@@ -170,14 +209,19 @@ export async function POST() {
       const matchHistoryUpdates = Array.from(previousMatches.entries()).map(([userId, matchedUserIds]) => ({
         id: crypto.randomUUID(),
         userId,
-        matchedUserIds: JSON.stringify([...matchedUserIds]),
+        matchedUserIds: Array.from(matchedUserIds).join(','),
         createdAt: new Date()
       }))
 
-      await db.insert(matchHistory).values(matchHistoryUpdates).onConflictDoUpdate({
-        target: matchHistory.userId,
-        set: { matchedUserIds: matchHistory.matchedUserIds, createdAt: new Date() }
-      });
+      for (const update of matchHistoryUpdates) {
+        await db.insert(matchHistory).values(update).onConflictDoUpdate({
+          target: matchHistory.userId,
+          set: { 
+            matchedUserIds: update.matchedUserIds, 
+            createdAt: update.createdAt 
+          }
+        });
+      }
     }
 
     return NextResponse.json({ 

@@ -4,7 +4,7 @@ import { users, preferences } from './server/schema'
 import { v4 as uuidv4 } from 'uuid'
 
 // Load environment variables
-const connectionString = process.env.POSTGRES_URL
+const connectionString = "postgres://postgres:Charlie750$@localhost:5432/gdbase"
 if (!connectionString) {
   throw new Error('POSTGRES_URL environment variable is not set')
 }
@@ -19,13 +19,13 @@ const db = drizzle(queryClient, { schema: { users, preferences } })
 
 const genders = ['male', 'female', 'non-binary'] as const
 const possibleGenderPreferences = [
-  '["male"]',
-  '["female"]',
-  '["non-binary"]',
-  '["male","female"]',
-  '["male","non-binary"]',
-  '["female","non-binary"]',
-  '["male","female","non-binary"]'
+  'male',
+  'female',
+  'non-binary',
+  'male,female',
+  'male,non-binary',
+  'female,non-binary',
+  'male,female,non-binary'
 ]
 
 async function seedDatabase() {
