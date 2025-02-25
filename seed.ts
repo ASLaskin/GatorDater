@@ -19,13 +19,13 @@ const db = drizzle(queryClient, { schema: { users, preferences } })
 
 const genders = ['male', 'female', 'non-binary'] as const
 const possibleGenderPreferences = [
-  '["male"]',
-  '["female"]',
-  '["non-binary"]',
-  '["male","female"]',
-  '["male","non-binary"]',
-  '["female","non-binary"]',
-  '["male","female","non-binary"]'
+  'male',
+  'female',
+  'non-binary',
+  'male,female',
+  'male,non-binary',
+  'female,non-binary',
+  'male,female,non-binary'
 ]
 
 async function seedDatabase() {

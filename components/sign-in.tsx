@@ -4,7 +4,7 @@ export function SignIn() {
   return (
     <form className="flex flex-col items-center gap-2" action={resendLogin}>
       <input
-        className="border p-2"
+        className="border-slate-200 rounded-sm p-2"
         type="text"
         name="email"
         placeholder="Email"
