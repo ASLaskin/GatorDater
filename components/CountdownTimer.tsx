@@ -1,22 +1,23 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Heart } from "lucide-react"
+import { useEffect, useState } from "react";
+import { Heart } from "lucide-react";
 
-import { Card } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
+import { Card } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 
-export default function MatchTimer() {
+export default function CountdownTimer() {
     const getTargetTime = () => {
-        const now = new Date()
-        const target = new Date()
+        const now = new Date();
+        const target = new Date();
+        target.setHours(14, 0, 0, 0); // 2 PM EST
 
-        // Set target time to 5 PM tomorrow
-        target.setDate(now.getDate() + 1)
-        target.setHours(17, 0, 0, 0) // 5 PM
+        if (now > target) {
+            target.setDate(target.getDate() + 1);
+        }
 
-        return target
-    }
+        return target;
+    };
 
     const calculateTimeLeft = () => {
         const now = new Date()
@@ -39,7 +40,7 @@ export default function MatchTimer() {
 
     useEffect(() => {
         const timer = setInterval(() => {
-            setTimeLeft(calculateTimeLeft)
+            setTimeLeft(calculateTimeLeft);
 
             // Calculate progress (remaining time / full 24-hour period)
             const now = new Date().getTime()
@@ -53,7 +54,7 @@ export default function MatchTimer() {
     }, [])
 
     return (
-        <Card className="w-full max-w-md p-8 flex flex-col  border-none items-center gap-8  bg-white/80">
+        <Card className="w-full max-w-md p-8 flex flex-col border-none items-center gap-8 bg-white/80">
             <div className="relative flex items-center justify-center">
                 <div className="absolute">
                     <Progress
@@ -74,24 +75,6 @@ export default function MatchTimer() {
                     </div>
                 </div>
             </div>
-
-            <div className="text-center space-y-2">
-                <h1 className="text-2xl font-semibold">Daily Match</h1>
-                <p className="text-muted-foreground">
-                    Your next potential match will be revealed when the timer reaches zero
-                </p>
-            </div>
-            <div className="flex items-center space-x-2">
-                <input
-                    type="checkbox"
-                    id="notify"
-                    className="h-5 w-5 border-gray-300 rounded focus:ring-blue-500"
-                />
-                <label htmlFor="notify" className="text-sm font-medium text-gray-900 dark:text-gray-300">
-                    Get notified for the next match
-                </label>
-            </div>
-
         </Card>
     )
 }
