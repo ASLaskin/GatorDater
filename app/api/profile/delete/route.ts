@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { db } from "@/server";
 import { users } from "@/server/schema";
 import { eq } from "drizzle-orm";
 import { auth } from "@/server/auth";
 
-export async function DELETE(req: NextRequest) {
+export async function DELETE() {
   try {
     const session = await auth();
     

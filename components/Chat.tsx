@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useCallback } from "react";
 
 interface Message {
   id: string;
@@ -12,12 +13,10 @@ interface Message {
 
 interface ChatProps {
   matchId: string;
-  matchedUserName: string;
-  matchedUserImage?: string;
   currentUserId: string;
 }
 
-export default function Chat({ matchId, matchedUserName, matchedUserImage, currentUserId }: ChatProps) {
+export default function Chat({ matchId, currentUserId }: ChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -33,7 +32,7 @@ export default function Chat({ matchId, matchedUserName, matchedUserImage, curre
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Fetch messages
-  const fetchMessages = async () => {
+  const fetchMessages = useCallback(async () => {
     try {
       const response = await fetch(`/api/messages?matchId=${matchId}`);
       if (!response.ok) {
@@ -47,7 +46,11 @@ export default function Chat({ matchId, matchedUserName, matchedUserImage, curre
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [matchId]);
+  
+  useEffect(() => {
+    fetchMessages();
+  }, [fetchMessages]);
 
   // Initial fetch
   useEffect(() => {
@@ -125,8 +128,12 @@ export default function Chat({ matchId, matchedUserName, matchedUserImage, curre
       setMessages([...messages, result.message]);
       setNewMessage("");
       setError(null);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unexpected error occurred");
+      }
       console.error(err);
     }
   };

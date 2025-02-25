@@ -63,7 +63,7 @@ export default function ProfileForm({ initialUser }: ProfileFormProps) {
         title: "Profile Updated",
         description: "Your profile has been successfully updated",
       });
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Profile failed to update",

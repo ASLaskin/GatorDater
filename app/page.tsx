@@ -1,7 +1,6 @@
 import { auth } from "@/server/auth";
 import Header from "@/components/header";
 import { SignIn } from "@/components/sign-in";
-import dynamic from 'next/dynamic';
 import { Card } from '@/components/ui/card';
 import MatchesList from "@/components/match";
 import CountdownWrapper from "@/components/CountdownWrapper";

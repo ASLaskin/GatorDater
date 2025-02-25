@@ -3,10 +3,7 @@ import { db } from '@/server'
 import { users, matcher } from '@/server/schema'
 import { eq, or, and } from 'drizzle-orm'
 
-export async function GET(
-  req: Request,
-  { params }: { params: { userId: string } }
-) {
+export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url)
     const userId = searchParams.get('userId')

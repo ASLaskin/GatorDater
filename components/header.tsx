@@ -1,5 +1,5 @@
 import type React from "react"
-import { HelpCircle, Settings, User, Settings2, Menu, LogOut } from "lucide-react"
+import { HelpCircle, Settings, User, Settings2, Menu } from "lucide-react"
 import { auth } from "@/server/auth"
 import SignOut from "@/components/sign-out"
 import { Button } from "@/components/ui/button"

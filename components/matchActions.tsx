@@ -12,7 +12,6 @@ interface MatchActionsProps {
 }
 
 const MatchActions = ({ 
-  matchId, 
   isLiked, 
   onLike, 
   onPass, 

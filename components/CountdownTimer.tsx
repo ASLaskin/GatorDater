@@ -1,6 +1,4 @@
-"use client";
-
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Heart } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
@@ -19,39 +17,38 @@ export default function CountdownTimer() {
         return target;
     };
 
-    const calculateTimeLeft = () => {
-        const now = new Date()
-        const target = getTargetTime()
-        const difference = target.getTime() - now.getTime()
+    const calculateTimeLeft = useCallback(() => {
+        const now = new Date();
+        const target = getTargetTime();
+        const difference = target.getTime() - now.getTime();
 
         if (difference <= 0) {
-            return { hours: 0, minutes: 0, seconds: 0 }
+            return { hours: 0, minutes: 0, seconds: 0 };
         }
 
-        const hours = Math.floor(difference / (1000 * 60 * 60))
-        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60))
-        const seconds = Math.floor((difference % (1000 * 60)) / 1000)
+        const hours = Math.floor(difference / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
 
-        return { hours, minutes, seconds }
-    }
+        return { hours, minutes, seconds };
+    }, []);
 
-    const [timeLeft, setTimeLeft] = useState(calculateTimeLeft)
-    const [progress, setProgress] = useState(100)
+    const [timeLeft, setTimeLeft] = useState(calculateTimeLeft);
+    const [progress, setProgress] = useState(100);
 
     useEffect(() => {
         const timer = setInterval(() => {
             setTimeLeft(calculateTimeLeft);
 
-            // Calculate progress (remaining time / full 24-hour period)
-            const now = new Date().getTime()
-            const target = getTargetTime().getTime()
-            const totalSeconds = (target - (target - 24 * 60 * 60 * 1000)) / 1000 // 24-hour period
-            const remainingSeconds = (target - now) / 1000
-            setProgress((remainingSeconds / totalSeconds) * 100)
-        }, 1000)
+            const now = new Date().getTime();
+            const target = getTargetTime().getTime();
+            const totalSeconds = 24 * 60 * 60; // 24-hour period
+            const remainingSeconds = (target - now) / 1000;
+            setProgress((remainingSeconds / totalSeconds) * 100);
+        }, 1000);
 
-        return () => clearInterval(timer)
-    }, [])
+        return () => clearInterval(timer);
+    }, [calculateTimeLeft]); // ✅ Fixed: Now includes `calculateTimeLeft`
 
     return (
         <Card className="w-full max-w-md p-8 flex flex-col border-none items-center gap-8 bg-white/80">
@@ -76,5 +73,5 @@ export default function CountdownTimer() {
                 </div>
             </div>
         </Card>
-    )
+    );
 }

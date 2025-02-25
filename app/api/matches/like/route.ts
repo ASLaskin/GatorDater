@@ -1,8 +1,8 @@
 // app/api/matches/like/route.ts
 import { NextResponse } from 'next/server';
 import { db } from '@/server';
-import { matcher, matchHistory } from '@/server/schema';
-import { eq, and, or } from 'drizzle-orm';
+import { matcher } from '@/server/schema';
+import { eq } from 'drizzle-orm';
 import { auth } from "@/server/auth";
 
 export async function POST(req: Request) {
