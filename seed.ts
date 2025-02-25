@@ -4,7 +4,7 @@ import { users, preferences } from './server/schema'
 import { v4 as uuidv4 } from 'uuid'
 
 // Load environment variables
-const connectionString = "postgres://postgres:Charlie750$@localhost:5432/gdbase"
+const connectionString = process.env.POSTGRES_URL
 if (!connectionString) {
   throw new Error('POSTGRES_URL environment variable is not set')
 }
