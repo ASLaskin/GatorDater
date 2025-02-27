@@ -24,7 +24,7 @@ export async function GET() {
 // Define the cron schedule - this runs at 2pm EST (7pm UTC) every day
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
-export const maxDuration = 300; // 5 minutes maximum execution time
+export const maxDuration = 60; // 5 minutes maximum execution time
 
 // This is the Vercel Cron syntax - 7pm UTC = 2pm EST
 export const config = {
