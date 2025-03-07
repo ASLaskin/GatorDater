@@ -48,7 +48,7 @@ export default async function Home() {
           </Card>
           <h1 className="flex items-center py-3">
             Got feedback? Let me know
-            <a href="" className="text-blue-400 hover:text-blue-500 underline px-1"> Here</a>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLScVT7Q-OhrIj6wHML0aDYAfBoeJLe_u6D4Z0OSLJzco0B2fKA/viewform" className="text-blue-400 hover:text-blue-500 underline px-1"> Here</a>
           </h1>
         </div>
       ) : (
@@ -67,7 +67,7 @@ export default async function Home() {
           </div>
           <h1 className="flex items-center py-3">
             Got feedback? Let me know
-            <a href="" className="text-blue-400 hover:text-blue-500 underline px-1"> Here</a>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLScVT7Q-OhrIj6wHML0aDYAfBoeJLe_u6D4Z0OSLJzco0B2fKA/viewform" className="text-blue-400 hover:text-blue-500 underline px-1"> Here</a>
           </h1>
         </div>
       )}
