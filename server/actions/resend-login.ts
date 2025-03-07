@@ -1,7 +1,6 @@
 "use server"
 
 import { signIn } from "@/server/auth"
-import { redirect } from "next/navigation"
 
 export default async function resendLogin(formData: FormData) {
   const email = formData.get("email") as string
