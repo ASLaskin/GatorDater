@@ -26,13 +26,6 @@ export function SignIn() {
   async function handleSubmit(formData: FormData) {
     setError(null)
     
-    const email = formData.get("email") as string
-    
-    // Client-side validation
-    if (!email || !email.endsWith("@ufl.edu")) {
-      setError("Only @ufl.edu email addresses are allowed")
-      return
-    }
     
     try {
       await resendLogin(formData)
@@ -59,9 +52,6 @@ export function SignIn() {
         className="border border-slate-200 rounded-md p-2 w-full"
         type="email"
         name="email"
-        placeholder="Email (@ufl.edu only)"
-        required
-        pattern=".+@ufl\.edu$"
         title="Please enter a valid @ufl.edu email address"
       />
       {error && (
